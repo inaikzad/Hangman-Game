@@ -82,6 +82,7 @@ func main() {
 		if isGuessCorrect(chosenWord, letter) {
 			guessedLetters[letter] = true
 		} else {
+			fmt.Println("Wrong guess... Try again!")
 			hangmanState++
 		}
 	}
