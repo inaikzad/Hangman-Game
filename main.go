@@ -92,7 +92,7 @@ func main() {
 	} else if isHangmanComplete(hangmanState) {
 
 		q := color.New(color.FgRed, color.Bold)
-		fmt.Println(getHangmanDrawing(6))
+		fmt.Println(getHangmanDrawing(7))
 		q.Println("Game Over")
 		fmt.Printf("The word was %s...\n", chosenWord)
 		q.Println("You lost!")
@@ -190,5 +190,5 @@ func isWordGuessed(targetWord string, guessedLetters map[rune]bool) bool {
 }
 
 func isHangmanComplete(hangmanState int) bool {
-	return hangmanState >= 6
+	return hangmanState >= 7
 }
