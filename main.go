@@ -16,7 +16,6 @@ import (
 var inputReader = bufio.NewReader(os.Stdin)
 var dictionary = []string{
 	"Squirrel",
-	"Statue of liberty",
 	"Awkward",
 	"Rhythm",
 	"Microwave",
@@ -30,22 +29,18 @@ var dictionary = []string{
 	"Keyhole",
 	"Quartz",
 	"Crystal",
-	"Eiffel Tower",
 	"Programming",
 	"Restaurant",
 	"Overload",
-	"Hello World",
 	"Painting",
 	"Computer",
 	"Window",
 	"Laptop",
-	"Mobile Phone",
 	"Piggybank",
 	"House",
 	"Paintbrush",
 	"Toothpaste",
 	"Toothbrush",
-	"Art Gallery",
 	"Museum",
 }
 
@@ -112,8 +107,8 @@ func GameInstructions() {
 	d := color.New(color.FgYellow)
 	d.Printf(`
 1. The player will select a letter from the alphabet. (Please use lowercase letters)
-2. If the word/phrase contains that letter, all other letters equal to it are going to be revealed.
-3. If the word/phrase doesnt contain this letter, a portion of the hangman is going to be added.
+2. If the word contains that letter, all other letters equal to it are going to be revealed.
+3. If the word doesnt contain this letter, a portion of the hangman is going to be added.
 4. The game continues until:
 a) the word/phrase is guessed and all letters are revealed - WINNER or,
 b) all the parts of the hangman are displayed - LOSER
