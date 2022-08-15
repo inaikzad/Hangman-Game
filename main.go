@@ -13,39 +13,49 @@ import (
 	"github.com/fatih/color"
 )
 
-var inputReader = bufio.NewReader(os.Stdin)
-var dictionary = []string{
-	"Squirrel",
-	"Awkward",
-	"Rhythm",
-	"Microwave",
-	"Galaxy",
-	"Lucky",
-	"Injury",
-	"Vaporize",
-	"Strenght",
-	"Height",
-	"Equip",
-	"Keyhole",
-	"Quartz",
-	"Crystal",
-	"Programming",
-	"Restaurant",
-	"Overload",
-	"Painting",
-	"Computer",
-	"Window",
-	"Laptop",
-	"Piggybank",
-	"House",
-	"Paintbrush",
-	"Toothpaste",
-	"Toothbrush",
-	"Museum",
-}
+type GameResult uint
+
+const (
+	UserExit = GameResult(iota)
+	UserLost
+	UserWon
+)
+
+var (
+	inputReader = bufio.NewReader(os.Stdin)
+	dictionary  = []string{
+		"Squirrel",
+		"Awkward",
+		"Rhythm",
+		"Microwave",
+		"Galaxy",
+		"Lucky",
+		"Injury",
+		"Vaporize",
+		"Strenght",
+		"Height",
+		"Equip",
+		"Keyhole",
+		"Quartz",
+		"Crystal",
+		"Programming",
+		"Restaurant",
+		"Overload",
+		"Painting",
+		"Computer",
+		"Window",
+		"Laptop",
+		"Piggybank",
+		"House",
+		"Paintbrush",
+		"Toothpaste",
+		"Toothbrush",
+		"Museum",
+	}
+)
 
 func main() {
-	//Printing Instructions
+	// Printing Instructions
 	red := color.New(color.FgRed)
 	boldRed := red.Add(color.Bold)
 	boldRed.Println("Welcome to the game Hangman. The instructions are:")
@@ -53,21 +63,39 @@ func main() {
 	fmt.Println()
 	color.Black("The word is:")
 
-	//Printing the random word
+	// Printing the random word
 	rand.Seed(time.Now().UnixNano())
 	chosenWord := getRandomWord()
 	guessedLetters := initializeGuessedWords(chosenWord)
-	hangmanState := 0
 
-	for !isGameOver(chosenWord, guessedLetters, hangmanState) {
+	result := runGame(chosenWord, guessedLetters)
+
+	switch result {
+	case UserExit:
+		fmt.Println("Goodbye...")
+	case UserLost:
+		q := color.New(color.FgRed, color.Bold)
+		fmt.Println(getHangmanDrawing(7))
+		q.Println("Game Over")
+		fmt.Printf("The word was %s...\n", chosenWord)
+		q.Println("You lost!")
+	case UserWon:
+		t := color.New(color.FgGreen, color.Bold)
+		t.Println("Game Over")
+		fmt.Printf("The word was %s!\n", chosenWord)
+		t.Println("You won!")
+	default:
+		panic("Illegal game result")
+	}
+}
+
+func runGame(chosenWord string, guessedLetters map[rune]bool) GameResult {
+	hangmanState := 0
+	for {
 		printGameState(chosenWord, guessedLetters, hangmanState)
 		input := readInput()
-		if input == "exit" {
-			fmt.Println("Goodbye...")
-			os.Exit(0)
-		} else if input == "Exit" {
-			fmt.Println("Goodbye...")
-			os.Exit(0)
+		if strings.ToLower(input) == "exit" {
+			return UserExit
 		} else if len(input) != 1 {
 			fmt.Println("Invalid input. Please use letters only.")
 			continue
@@ -80,27 +108,14 @@ func main() {
 			fmt.Println("Wrong guess... Try again!")
 			hangmanState++
 		}
+
+		if isWordGuessed(chosenWord, guessedLetters) {
+			return UserWon
+		}
+		if isHangmanComplete(hangmanState) {
+			return UserLost
+		}
 	}
-
-	if isWordGuessed(chosenWord, guessedLetters) {
-
-		t := color.New(color.FgGreen, color.Bold)
-		t.Println("Game Over")
-		fmt.Printf("The word was %s!\n", chosenWord)
-		t.Println("You won!")
-
-	} else if isHangmanComplete(hangmanState) {
-
-		q := color.New(color.FgRed, color.Bold)
-		fmt.Println(getHangmanDrawing(7))
-		q.Println("Game Over")
-		fmt.Printf("The word was %s...\n", chosenWord)
-		q.Println("You lost!")
-
-	} else {
-		panic("invalid state. Game is over and there is no winner")
-	}
-
 }
 
 func GameInstructions() {
@@ -112,7 +127,7 @@ func GameInstructions() {
 4. The game continues until:
 a) the word/phrase is guessed and all letters are revealed - WINNER or,
 b) all the parts of the hangman are displayed - LOSER
-5. You can exit the program at all times by typing "Exit"/"exit" 
+5. You can exit the program at all times by typing "Exit"/"exit"
 `)
 }
 
@@ -136,7 +151,6 @@ func printGameState(targetWord string, guessedLetters map[rune]bool, hangmanStat
 }
 
 func getWordGuessingProgress(chosenWord string, guessedLetters map[rune]bool) string {
-
 	result := ""
 	for _, ch := range chosenWord {
 		if ch == ' ' {
